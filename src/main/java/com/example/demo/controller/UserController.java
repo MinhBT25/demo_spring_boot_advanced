@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+//@RequestMapping("/api")
 public class UserController {
     @Autowired
     AuthenticationManager authenticationManager;
@@ -27,7 +29,16 @@ public class UserController {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
-    @PostMapping("/login")
+    @RequestMapping("/login")
+    private ModelAndView loginForm(){
+        ModelAndView modelAndView = new ModelAndView();
+
+        modelAndView.setViewName("login");
+        return modelAndView;
+    }
+
+    @PostMapping("/auth")
+
     public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         // Xác thực thông tin người dùng Request lên
@@ -44,6 +55,7 @@ public class UserController {
 
         // Trả về jwt cho người dùng.
         String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+        System.out.println("Login thành công");
         return new LoginResponse(jwt);
     }
 

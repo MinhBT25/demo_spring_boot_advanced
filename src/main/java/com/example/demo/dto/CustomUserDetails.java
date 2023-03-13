@@ -1,5 +1,5 @@
 package com.example.demo.dto;
-import com.example.demo.entity.User;
+import com.example.demo.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

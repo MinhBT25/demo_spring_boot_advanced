@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script>
+        function UserAction(event) {
+            event.preventDefault();
+
+            const url = "http://localhost:8080/auth";
+            const data =
+                {
+                    "username": document.getElementById('username').value,
+                    "password": document.getElementById('password').value
+                };
+            const other_params = {
+                headers: {"content-type": "application/json; charset=UTF-8"},
+                body: JSON.stringify(data),
+                method: "POST",
+                mode: "cors"
+            };
+
+            fetch(url, other_params)
+                .then(function (response) {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error("Could not reach the API: " + response.statusText);
+                    }
+                }).then(function (data) {
+                document.getElementById("message").innerHTML = "Success";
+                window.open("http://localhost:8080/random")
+            }).catch(function (error) {
+                document.getElementById("message").innerHTML = error.message;
+            });
+            return true;
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <form class="form-signin" method="post">
+        <p>
+            <label for="username" class="sr-only">Username</label>
+            <input type="text" id="username" name="username" class="form-control"
+                   placeholder="Username" required autofocus>
+        </p>
+        <p>
+            <label for="password" class="sr-only">Password</label>
+            <input type="password" id="password" name="password" class="form-control"
+                   placeholder="Password" required>
+        </p>
+        <span id="message" ></span>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="UserAction(event)">Login</button>
+    </form>
+</div>
+<!--<script>-->
+<!--    function UserAction(event) {-->
+<!--        event.preventDefault();-->
+
+<!--        const url = "http://localhost:8080/auth";-->
+<!--        const data =-->
+<!--            {-->
+<!--                "username": document.getElementById('username').value,-->
+<!--                "password": document.getElementById('password').value-->
+<!--            };-->
+<!--        const options = {-->
+<!--            method: 'POST',-->
+<!--            headers: {'Content-Type': 'application/json'},-->
+<!--            body: JSON.stringify(data)-->
+<!--        };-->
+<!--        console.log(data.password);-->
+<!--        console.log(data.username);-->
+<!--        fetch(url, options).then((res) => res.json()).then(data => console.log(data));-->
+<!--window.open("hello.html")-->
+<!--    }-->
+<!--</script>-->
+</body>
+</html>
