@@ -1,6 +1,6 @@
 package com.example.demo.jwt;
 
-import com.example.demo.service.UserService;
+import com.example.demo.service.impl.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

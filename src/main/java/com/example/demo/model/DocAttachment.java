@@ -8,20 +8,23 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "doc_attachment", schema = "testingsystem", catalog = "")
 @Data
-public class User {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class DocAttachment {
+
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @Basic
-    @Column(name = "username")
-    private String username;
+    @Column(name = "file_id")
+    private String fileId;
     @Basic
-    @Column(name = "password")
-    private String password;
+    @Column(name = "document_id")
+    private Long documentId;
 
 
 }

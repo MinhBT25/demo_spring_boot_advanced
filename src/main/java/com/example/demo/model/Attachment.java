@@ -11,17 +11,14 @@ import javax.persistence.Id;
 
 @Entity
 @Data
-public class User {
+public class Attachment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
-    private long id;
+    private String id;
     @Basic
-    @Column(name = "username")
-    private String username;
-    @Basic
-    @Column(name = "password")
-    private String password;
+    @Column(name = "name")
+    private String name;
 
 
 }
