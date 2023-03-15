@@ -1,9 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.DocumentDto;
+import com.example.demo.model.Attachment;
 import com.example.demo.model.Document;
 import com.example.demo.model.LoadFile;
 import com.example.demo.service.DocumentService;
+import com.example.demo.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -28,23 +30,32 @@ public class DocumentController {
     @Autowired
     private DocumentService documentService;
 
+    @Autowired
+    private FileService fileService;
+
     @GetMapping("/get-all")
     public Page<Document> getAllDocument(Pageable pageable){
         return documentService.getAllDocument( pageable);
     }
     @PostMapping("/save")
-    public void saveDocument(Document document, List<MultipartFile> files, String jwt) throws IOException {
+    public void saveDocument(Document document, Attachment attachment, String jwt) throws IOException {
 //        jwt de lay ve id nguoi viet bai
-        documentService.createNewDocument(document,files,jwt);
+        documentService.createNewDocument(document,attachment,jwt);
     }
+
+    @PostMapping("/upfile")
+    public Attachment saveDocument(MultipartFile file) throws IOException {
+        return fileService.addFile(file);
+    }
+
     @GetMapping("/get-doc-by-id/{id}")
-    public DocumentDto getDocById(@PathVariable("id") long id){
+    public DocumentDto getDocById(@PathVariable("id") long id) throws Exception {
         return documentService.getDocumentById(id);
     }
 
     @GetMapping("/download/{id}")
     public ResponseEntity<ByteArrayResource> download(@PathVariable String id) throws IOException {
-        LoadFile loadFile = documentService.downloadFile(id);
+        LoadFile loadFile = fileService.downloadFile(id);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(loadFile.getFileType() ))

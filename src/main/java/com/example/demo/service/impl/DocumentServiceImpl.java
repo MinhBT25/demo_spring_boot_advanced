@@ -58,16 +58,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public void createNewDocument(Document document, List<MultipartFile> files, String jwt) throws IOException {
-        for (MultipartFile file: files) {
-            //Save file
-            DBObject metadata = new BasicDBObject();
-            metadata.put("fileSize", file.getSize());
-            Object fileID = template.store(file.getInputStream(), file.getOriginalFilename(), file.getContentType(), metadata);
-            //Set id file to document
-            Attachment attachment = new Attachment();
-            attachment.setId(fileID.toString());
-            attachment.setName(file.getOriginalFilename());
+    public void createNewDocument(Document document, Attachment attachment, String jwt) throws IOException {
             attachmentRepository.save(attachment);
 
             //Set userId writes document
@@ -78,42 +69,26 @@ public class DocumentServiceImpl implements DocumentService {
 
             DocAttachment docAttachment = new DocAttachment();
             docAttachment.setDocumentId(docId);
-            docAttachment.setFileId(fileID.toString());
-        }
-
+            docAttachment.setFileId(attachment.getId());
     }
 
     @Override
-    public DocumentDto getDocumentById(long id) {
+    public DocumentDto getDocumentById(long id) throws Exception {
         Document document = documentRepository.findById(id).orElseThrow(
                 () -> new UsernameNotFoundException("Document not found with id : " + id)
         );
 
         DocumentDto documentDto = new DocumentDto();
-
+        List<String> listAttachId = docAttachRepository.findListAttachIdByDocId(id);
+        if (listAttachId.size() ==0){
+            throw new Exception("Không có tệp đính kèm");
+        }
         //Chua check khong co tep dinh kem
-        documentDto.setAttachmentNames(attachmentRepository.findByDocumentId(docAttachRepository.findByDocumentId(id)));
+        documentDto.setAttachmentNames(attachmentRepository.findByListId(listAttachId));
+        documentDto.setId(document.getId());
+        documentDto.setContent(document.getContent());
+        documentDto.setTitle(document.getTitle());
 
         return documentDto;
-    }
-
-
-    public LoadFile downloadFile(String id) throws IOException {
-
-        GridFSFile gridFSFile = template.findOne( new Query(Criteria.where("_id").is(id)) );
-
-        LoadFile loadFile = new LoadFile();
-
-        if (gridFSFile != null && gridFSFile.getMetadata() != null) {
-            loadFile.setFilename( gridFSFile.getFilename() );
-
-            loadFile.setFileType( gridFSFile.getMetadata().get("_contentType").toString() );
-
-            loadFile.setFileSize( gridFSFile.getMetadata().get("fileSize").toString() );
-
-            loadFile.setFile( IOUtils.toByteArray(operations.getResource(gridFSFile).getInputStream()) );
-        }
-
-        return loadFile;
     }
 }

@@ -14,5 +14,5 @@ public interface DocAttachRepository extends JpaRepository<DocAttachment,Long> {
 
     @Modifying
     @Query(value = "SELECT da.fileId FROM DocAttachment da WHERE da.documentId = :docId")
-    public List<Long> findByDocumentId(@Param("docId") long id);
+    public List<String> findListAttachIdByDocId(@Param("docId") long id);
 }
