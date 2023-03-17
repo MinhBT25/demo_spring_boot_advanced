@@ -8,8 +8,10 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
+import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -19,7 +21,7 @@ public class JwtTokenProvider {
     private final String JWT_SECRET = "minh123321";
 
     //Thời gian có hiệu lực của chuỗi jwt
-    private final long JWT_EXPIRATION = 3600L;
+    private final long JWT_EXPIRATION = 10*60*60*1000;
 
     // Tạo ra jwt từ thông tin user
     public String generateToken(CustomUserDetails userDetails) {
@@ -28,6 +30,7 @@ public class JwtTokenProvider {
         // Tạo chuỗi json web token từ id của user.
         return Jwts.builder()
                 .setSubject(Long.toString(userDetails.getUser().getId()))
+                .claim("user",userDetails.getUsername())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, JWT_SECRET)
@@ -42,6 +45,12 @@ public class JwtTokenProvider {
                 .getBody();
 
         return Long.parseLong(claims.getSubject());
+    }
+    public String getUserNameFromJwt(String token){
+        String[] parts = token.split("\\.");
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        JSONObject payload = new JSONObject(decoder.decode(parts[1]));
+        return payload.getString("username");
     }
 
     public boolean validateToken(String authToken) {

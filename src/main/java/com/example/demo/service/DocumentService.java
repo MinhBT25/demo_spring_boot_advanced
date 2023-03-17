@@ -14,7 +14,7 @@ import java.util.List;
 public interface DocumentService {
     Page<Document> getAllDocument(Pageable pageable);
 
-    void createNewDocument(Document document, Attachment attachment, String jwt) throws IOException;
+    void createNewDocument(Document document,List<String> attachments) throws IOException;
 
     DocumentDto getDocumentById(long id) throws Exception;
 

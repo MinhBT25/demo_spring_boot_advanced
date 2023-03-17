@@ -1,4 +1,5 @@
 package com.example.demo.dto;
+
 import com.example.demo.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +19,9 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // Mặc định mình sẽ để tất cả là ROLE_USER. Để demo cho đơn giản.
+//        Collection<SimpleGrantedAuthority> list = new ArrayList<>();
+//        list.add(new SimpleGrantedAuthority("ROLE_USER"));
+//        list.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
@@ -35,7 +39,6 @@ public class CustomUserDetails implements UserDetails {
     public boolean isAccountNonExpired() {
         return true;
     }
-
     @Override
     public boolean isAccountNonLocked() {
         return true;

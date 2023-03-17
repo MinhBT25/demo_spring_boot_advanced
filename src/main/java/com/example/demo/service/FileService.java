@@ -42,21 +42,32 @@ public class FileService {
 
     public LoadFile downloadFile(String id) throws IOException {
 
-        GridFSFile gridFSFile = template.findOne( new Query(Criteria.where("_id").is(id)) );
+        GridFSFile gridFSFile = template.findOne(new Query(Criteria.where("_id").is(id)));
 
         LoadFile loadFile = new LoadFile();
 
         if (gridFSFile != null && gridFSFile.getMetadata() != null) {
-            loadFile.setFilename( gridFSFile.getFilename() );
+            loadFile.setFilename(gridFSFile.getFilename());
 
-            loadFile.setFileType( gridFSFile.getMetadata().get("_contentType").toString() );
+            loadFile.setFileType(gridFSFile.getMetadata().get("_contentType").toString());
 
-            loadFile.setFileSize( gridFSFile.getMetadata().get("fileSize").toString() );
+            loadFile.setFileSize(gridFSFile.getMetadata().get("fileSize").toString());
 
-            loadFile.setFile( IOUtils.toByteArray(operations.getResource(gridFSFile).getInputStream()) );
+            loadFile.setFile(IOUtils.toByteArray(operations.getResource(gridFSFile).getInputStream()));
         }
 
         return loadFile;
     }
 
+    public String getFileNameById(String id) {
+
+        GridFSFile gridFSFile = template.findOne(new Query(Criteria.where("_id").is(id)));
+
+        String fileName = "";
+
+        if (gridFSFile != null && gridFSFile.getMetadata() != null) {
+            fileName = gridFSFile.getFilename();
+        }
+        return fileName;
+    }
 }

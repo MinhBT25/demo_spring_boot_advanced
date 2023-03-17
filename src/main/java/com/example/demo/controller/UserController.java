@@ -30,7 +30,7 @@ public class UserController {
     private JwtTokenProvider tokenProvider;
 
     @RequestMapping("/login")
-    private ModelAndView loginForm(){
+    private ModelAndView loginForm() {
         ModelAndView modelAndView = new ModelAndView();
 
         modelAndView.setViewName("login");
@@ -38,7 +38,6 @@ public class UserController {
     }
 
     @PostMapping("/auth")
-
     public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         // Xác thực thông tin người dùng Request lên
@@ -51,18 +50,11 @@ public class UserController {
 
         // Nếu không xảy ra exception tức là thông tin hợp lệ
         // Set thông tin authentication vào Security Context
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Trả về jwt cho người dùng.
         String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
-        System.out.println("Login thành công");
         return new LoginResponse(jwt);
-    }
-
-    // Api /api/random yêu cầu phải xác thực mới có thể request
-    @GetMapping("/random")
-    public RandomStuff randomStuff(){
-        return new RandomStuff("JWT Hợp lệ mới có thể thấy được message này");
     }
 
 }

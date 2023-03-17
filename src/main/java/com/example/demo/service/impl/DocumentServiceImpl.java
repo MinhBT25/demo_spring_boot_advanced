@@ -11,6 +11,7 @@ import com.example.demo.repository.DocAttachRepository;
 import com.example.demo.repository.DocumentRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.DocumentService;
+import com.example.demo.service.FileService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.model.GridFSFile;
@@ -36,40 +37,34 @@ public class DocumentServiceImpl implements DocumentService {
     private DocumentRepository documentRepository;
 
     @Autowired
-    private AttachmentRepository attachmentRepository;
+    private AttachmentRepository attachRepository;
 
     @Autowired
     private DocAttachRepository docAttachRepository;
 
     @Autowired
-    private GridFsTemplate template;
-
-    @Autowired
-    private GridFsOperations operations;
-
-    @Autowired
-    private JwtTokenProvider tokenProvider;
-
-    @Autowired
-    private UserRepository userRepository;
+    private FileService fileService;
 
     public Page<Document> getAllDocument(Pageable pageable) {
         return documentRepository.findAll(pageable);
     }
 
     @Override
-    public void createNewDocument(Document document, Attachment attachment, String jwt) throws IOException {
-            attachmentRepository.save(attachment);
-
-            //Set userId writes document
-            long docId = tokenProvider.getUserIdFromJWT(jwt);
-            document.setId(docId);
-            //Save document
-            documentRepository.save(document);
+    public void createNewDocument(Document document,List<String> listAttachmentId){
+        documentRepository.save(document);
+        for (String attachId: listAttachmentId) {
+            System.out.println("a1"+attachId);
+            Attachment attachment = new Attachment();
+            attachment.setId(attachId);
+            attachment.setName(fileService.getFileNameById(attachId));
+            attachRepository.save(attachment);
 
             DocAttachment docAttachment = new DocAttachment();
-            docAttachment.setDocumentId(docId);
-            docAttachment.setFileId(attachment.getId());
+            docAttachment.setDocumentId(document.getId());
+            docAttachment.setFileId(attachId);
+
+            docAttachRepository.save(docAttachment);
+        }
     }
 
     @Override
@@ -84,7 +79,7 @@ public class DocumentServiceImpl implements DocumentService {
             throw new Exception("Không có tệp đính kèm");
         }
         //Chua check khong co tep dinh kem
-        documentDto.setAttachmentNames(attachmentRepository.findByListId(listAttachId));
+        documentDto.setAttachmentNames(attachRepository.findByListId(listAttachId));
         documentDto.setId(document.getId());
         documentDto.setContent(document.getContent());
         documentDto.setTitle(document.getTitle());

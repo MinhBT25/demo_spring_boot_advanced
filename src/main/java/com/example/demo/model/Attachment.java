@@ -12,7 +12,6 @@ import javax.persistence.Id;
 @Entity
 @Data
 public class Attachment {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
     private String id;

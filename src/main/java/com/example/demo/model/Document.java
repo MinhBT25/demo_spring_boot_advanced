@@ -23,11 +23,8 @@ public class Document {
     @Column(name = "content")
     private String content;
     @Basic
-    @Column(name = "attachment")
-    private String attachment;
-    @Basic
-    @Column(name = "user_id")
-    private Long userId;
+    @Column(name = "user_name")
+    private String userName;
 
 
 }

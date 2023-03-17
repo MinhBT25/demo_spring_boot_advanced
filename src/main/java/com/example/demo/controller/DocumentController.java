@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.CreateDocumentRequest;
 import com.example.demo.dto.DocumentDto;
+import com.example.demo.jwt.JwtTokenProvider;
 import com.example.demo.model.Attachment;
 import com.example.demo.model.Document;
 import com.example.demo.model.LoadFile;
@@ -13,13 +15,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 
@@ -33,14 +40,35 @@ public class DocumentController {
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     @GetMapping("/get-all")
-    public Page<Document> getAllDocument(Pageable pageable){
-        return documentService.getAllDocument( pageable);
+    public Page<Document> getAllDocument(Pageable pageable) {
+        return documentService.getAllDocument(pageable);
     }
+
+    @PostMapping("/some-endpoint") //API test get JWT TOKEN
+    public void someClassNmae(@RequestHeader("Authorization") String bearerToken) {
+
+        System.out.println(bearerToken);
+
+        // some more code
+    }
+
     @PostMapping("/save")
-    public void saveDocument(Document document, Attachment attachment, String jwt) throws IOException {
-//        jwt de lay ve id nguoi viet bai
-        documentService.createNewDocument(document,attachment,jwt);
+    @Transactional
+    public void saveDocument(@RequestBody CreateDocumentRequest request) throws IOException {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Document document = new Document();
+        document.setTitle(request.getTitle());
+        document.setContent(request.getContent());
+
+        document.setUserName(userDetails.getUsername());
+
+        List<String> listId = request.getAttachId();
+        documentService.createNewDocument(document, listId);
     }
 
     @PostMapping("/upfile")
@@ -51,6 +79,7 @@ public class DocumentController {
     @GetMapping("/get-doc-by-id/{id}")
     public DocumentDto getDocById(@PathVariable("id") long id) throws Exception {
         return documentService.getDocumentById(id);
+
     }
 
     @GetMapping("/download/{id}")
@@ -58,7 +87,7 @@ public class DocumentController {
         LoadFile loadFile = fileService.downloadFile(id);
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(loadFile.getFileType() ))
+                .contentType(MediaType.parseMediaType(loadFile.getFileType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + loadFile.getFilename() + "\"")
                 .body(new ByteArrayResource(loadFile.getFile()));
     }
