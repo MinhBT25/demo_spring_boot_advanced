@@ -12,8 +12,8 @@
             const url = "http://localhost:8080/auth";
             const data =
                 {
-                    "username": document.getElementById('username').value,
-                    "password": document.getElementById('password').value
+                    "username": anouncement.getElementById('username').value,
+                    "password": anouncement.getElementById('password').value
                 };
             const other_params = {
                 headers: {"content-type": "application/json; charset=UTF-8"},
@@ -30,10 +30,10 @@
                         throw new Error("Could not reach the API: " + response.statusText);
                     }
                 }).then(function (data) {
-                document.getElementById("message").innerHTML = "Success";
+                anouncement.getElementById("message").innerHTML = "Success";
                 window.open("http://localhost:8080/random")
             }).catch(function (error) {
-                document.getElementById("message").innerHTML = error.message;
+                anouncement.getElementById("message").innerHTML = error.message;
             });
             return true;
         }
@@ -63,8 +63,8 @@
 <!--        const url = "http://localhost:8080/auth";-->
 <!--        const data =-->
 <!--            {-->
-<!--                "username": document.getElementById('username').value,-->
-<!--                "password": document.getElementById('password').value-->
+<!--                "username": anouncement.getElementById('username').value,-->
+<!--                "password": anouncement.getElementById('password').value-->
 <!--            };-->
 <!--        const options = {-->
 <!--            method: 'POST',-->

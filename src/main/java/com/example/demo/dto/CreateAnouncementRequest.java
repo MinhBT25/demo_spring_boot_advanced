@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class CreateDocumentRequest {
+public class CreateAnouncementRequest {
     public String title;
     public String content;
     public List<String> attachId;

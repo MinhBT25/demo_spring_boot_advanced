@@ -1,6 +1,6 @@
 package com.example.demo.repository;
 
-import com.example.demo.model.DocAttachment;
+import com.example.demo.model.AnouncementAttachment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DocAttachRepository extends JpaRepository<DocAttachment,Long> {
+public interface AnouncementAttachRepository extends JpaRepository<AnouncementAttachment,Long> {
 
     @Modifying
-    @Query(value = "SELECT da.fileId FROM DocAttachment da WHERE da.documentId = :docId")
-    public List<String> findListAttachIdByDocId(@Param("docId") long id);
+    @Query(value = "SELECT aa.fileId FROM AnouncementAttachment aa WHERE aa.anouncementId= :aId")
+    public List<String> findListAttachIdByDocId(@Param("aId") long id);
 }

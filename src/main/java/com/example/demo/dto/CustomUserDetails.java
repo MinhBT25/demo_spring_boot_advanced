@@ -22,6 +22,7 @@ public class CustomUserDetails implements UserDetails {
 //        Collection<SimpleGrantedAuthority> list = new ArrayList<>();
 //        list.add(new SimpleGrantedAuthority("ROLE_USER"));
 //        list.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+//        return list;
         return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
     }
 

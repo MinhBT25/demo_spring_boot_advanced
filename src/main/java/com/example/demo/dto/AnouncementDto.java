@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class DocumentDto {
+public class AnouncementDto {
     private long id;
     private String title;
     private String content;

@@ -11,9 +11,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "doc_attachment", schema = "testingsystem", catalog = "")
+@Table(name = "anouncement_attachment")
 @Data
-public class DocAttachment {
+public class AnouncementAttachment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +23,9 @@ public class DocAttachment {
     @Column(name = "file_id")
     private String fileId;
     @Basic
-    @Column(name = "document_id")
-    private Long documentId;
+    @Column(name = "anouncement_id")
+    private Long anouncementId;
+
 
 
 }
