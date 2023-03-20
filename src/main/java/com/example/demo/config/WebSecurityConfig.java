@@ -54,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable();
         http.authorizeRequests().antMatchers("/login", "/auth").permitAll().anyRequest().authenticated();
-//        http.authorizeRequests().antMatchers(GET,"/document/**").hasAnyAuthority("ROLE_ADMIN");
+//        http.authorizeRequests().antMatchers(GET,"/document/**").hasAnyAuthority("ROLE_USER");
         // Thêm một lớp Filter kiểm tra jwt
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 

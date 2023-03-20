@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface AttachmentRepository extends JpaRepository<Attachment,String> {
     @Modifying
-    @Query(value = "SELECT a.name FROM Attachment a where a.id in :listId")
-    public List<String> findByListId(@Param("listId") List<String> listId);
+    @Query(value = "SELECT a FROM Attachment a where a.id in :listId")
+    public List<Attachment> findByListId(@Param("listId") List<String> listId);
 }

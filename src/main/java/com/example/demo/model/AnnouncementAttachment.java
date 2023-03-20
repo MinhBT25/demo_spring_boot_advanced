@@ -11,22 +11,21 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
+@Table(name = "anouncement_attachment")
 @Data
-@Table(name = "anouncement")
-public class Anouncement {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class AnnouncementAttachment {
+
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @Basic
-    @Column(name = "title")
-    private String title;
+    @Column(name = "file_id")
+    private String fileId;
     @Basic
-    @Column(name = "content")
-    private String content;
-    @Basic
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "anouncement_id")
+    private Long anouncementId;
+
 
 
 }

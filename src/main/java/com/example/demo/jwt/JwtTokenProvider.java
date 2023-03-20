@@ -47,12 +47,12 @@ public class JwtTokenProvider {
         return Long.parseLong(claims.getSubject());
     }
 
-//    public String getUserNameFromJwt(String token){
-//        String[] parts = token.split("\\.");
-//        Base64.Decoder decoder = Base64.getUrlDecoder();
-//        JSONObject payload = new JSONObject(decoder.decode(parts[1]));
-//        return payload.getString("username");
-//    }
+    public String getUserNameFromJwt(String token){
+        String[] parts = token.split("\\.");
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        JSONObject payload = new JSONObject(decoder.decode(parts[1]));
+        return payload.getString("username");
+    }
 
     public boolean validateToken(String authToken) {
         try {
