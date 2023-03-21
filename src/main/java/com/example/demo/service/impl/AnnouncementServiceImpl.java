@@ -34,7 +34,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     private FileService fileService;
 
     public Page<Announcement> getAllAnnouncement(Pageable pageable) {
-        return announcementRepository.getNewAnouncements(pageable);
+        return announcementRepository.getNewAnnouncements(pageable);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         }
 
         //Trả về đối tượng vừa tạo
-        return announcementRepository.getLastAnouncement();
+        return announcementRepository.getLastAnnouncement();
     }
 
     @Override

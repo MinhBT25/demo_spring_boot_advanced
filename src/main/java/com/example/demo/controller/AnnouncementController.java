@@ -1,11 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.request.CreateAnnouncementRequest;
 import com.example.demo.dto.AnnouncementDto;
-import com.example.demo.jwt.JwtTokenProvider;
 import com.example.demo.model.Announcement;
 import com.example.demo.model.Attachment;
 import com.example.demo.model.LoadFile;
+import com.example.demo.request.CreateAnnouncementRequest;
 import com.example.demo.service.AnnouncementService;
 import com.example.demo.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +40,6 @@ public class AnnouncementController {
     @Autowired
     private FileService fileService;
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-
     @GetMapping("/")
     public Page<Announcement> getAllAnouncement(Pageable pageable) {
         return announcementService.getAllAnnouncement(pageable);
@@ -61,10 +57,7 @@ public class AnnouncementController {
 
         List<String> listId = request.getAttachId();
         return announcementService.createNewAnnouncement(announcement, listId);
-
     }
-
-
 
     @GetMapping("/{id}")
     public AnnouncementDto getAnnouncementById(@PathVariable("id") long id) throws Exception {
@@ -88,9 +81,7 @@ public class AnnouncementController {
 
     @PostMapping("/delete/{id}")
     public void changeStatus(@PathVariable("id")Long id) throws Exception {
-        AnnouncementDto announcementDto = announcementService.getAnnouncementById(id);
-        Announcement announcement = new Announcement();
-        announcement.setId(id);
+        announcementService.deleteAnnouncement(id);
     }
     @GetMapping("/download/{id}")
     public ResponseEntity<ByteArrayResource> download(@PathVariable String id) throws IOException {
@@ -102,8 +93,11 @@ public class AnnouncementController {
                 .body(new ByteArrayResource(loadFile.getFile()));
     }
 
-    @PostMapping("/upfile")
+    @PostMapping("/upload")
     public Attachment saveFile(MultipartFile file) throws IOException {
         return fileService.addFile(file);
     }
+
+
+
 }

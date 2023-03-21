@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 public interface AnnouncementRepository extends JpaRepository<Announcement,Long> {
 
     @Query(value = "SELECT * FROM anouncement a  WHERE a.status = 'active' ORDER BY a.id DESC LIMIT 1",nativeQuery = true)
-    Announcement getLastAnouncement();
+    Announcement getLastAnnouncement();
 
     @Query(value = "SELECT * FROM anouncement a  WHERE a.status = 'active' ORDER BY a.id DESC",nativeQuery = true)
-    Page<Announcement> getNewAnouncements(Pageable pageable);
+    Page<Announcement> getNewAnnouncements(Pageable pageable);
 
     
 }
