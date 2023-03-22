@@ -8,6 +8,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
@@ -47,10 +48,10 @@ public class JwtTokenProvider {
         return Long.parseLong(claims.getSubject());
     }
 
-    public String getUserNameFromJwt(String token){
+    public String getUserNameFromJwt(String token) throws JSONException {
         String[] parts = token.split("\\.");
         Base64.Decoder decoder = Base64.getUrlDecoder();
-        JSONObject payload = new JSONObject(decoder.decode(parts[1]));
+        JSONObject payload = new JSONObject(String.valueOf(decoder.decode(parts[1])));
         return payload.getString("username");
     }
 

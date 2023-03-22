@@ -20,7 +20,7 @@ public class CoQuanBanHanh {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Type(type="uuid-char")
-    @Column(name="id", columnDefinition = "VARCHAR(255)", insertable = false, updatable = false, nullable = false)
+    @Column(name="id", columnDefinition = "binary(36)", insertable = false, updatable = false, nullable = false)
     private String id;
     @Basic
     @Column(name = "name")
