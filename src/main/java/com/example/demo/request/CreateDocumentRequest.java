@@ -1,10 +1,11 @@
 package com.example.demo.request;
 
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
-@Data
+@Getter
 public class CreateDocumentRequest {
     public String soVanBanId;
     public String soHieu;

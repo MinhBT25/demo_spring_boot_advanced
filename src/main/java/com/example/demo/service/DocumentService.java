@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface DocumentService{
-    Page<Document> getAllDocument(Pageable pageable);
+    Page<DocumentDto> getAllDocument(Pageable pageable, String search, String coQuanBanHanhId);
 
     DocumentDto getDocumentById(String id);
 
@@ -16,5 +16,4 @@ public interface DocumentService{
 
     Document updateDocument(Document document);
 
-//    List<Document> searchByTrichYeu(String search);
 }

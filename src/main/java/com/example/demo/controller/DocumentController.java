@@ -3,12 +3,11 @@ package com.example.demo.controller;
 import com.example.demo.dto.DocumentDto;
 import com.example.demo.model.Document;
 import com.example.demo.request.CreateDocumentRequest;
+import com.example.demo.request.SearchDocumentRequest;
 import com.example.demo.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.method.P;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,8 +30,9 @@ public class DocumentController {
     private DocumentService documentService;
 
     @GetMapping("/")
-    public Page<Document> getAllDocument(Pageable pageable) {
-        return documentService.getAllDocument(pageable);
+    public Page<DocumentDto> getAllDocument(Pageable pageable, @RequestBody SearchDocumentRequest request) {
+
+        return documentService.getAllDocument(pageable,request.getTuKhoa(),request.getCoQuanBanHanhId());
     }
 
     @GetMapping("/{id}")
@@ -75,10 +75,5 @@ public class DocumentController {
         documentService.createNewDocument(document,attachIds);
         return documentService.getDocumentById(id);
     }
-//    @GetMapping("/search")
-//    public Page<DocumentDto> searchByTrichYeu(@RequestParam(value = "search", required = false) String search){
-//        List<>
-//    }
-
 
 }

@@ -8,6 +8,7 @@ import com.example.demo.model.DocumentAttachment;
 import com.example.demo.model.SoVanBan;
 import com.example.demo.repository.AttachmentRepository;
 import com.example.demo.repository.CoQuanBanHanhRepository;
+import com.example.demo.repository.CustomDocumentRepository;
 import com.example.demo.repository.DocumentAttachmentRepository;
 import com.example.demo.repository.DocumentRepository;
 import com.example.demo.repository.NhomSoVanBanRepository;
@@ -16,12 +17,14 @@ import com.example.demo.service.DocumentService;
 import com.example.demo.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -47,14 +50,55 @@ public class DocumentServiceImpl implements DocumentService {
     @Autowired
     private CoQuanBanHanhRepository coQuanBanHanhRepository;
 
+    @Autowired
+    private CustomDocumentRepository customDocumentRepository;
+
     @Override
-    public Page<Document> getAllDocument(Pageable pageable) {
-        return documentRepository.findAll(pageable);
+    public Page<DocumentDto> getAllDocument(Pageable pageable,String tuKhoa,String coQuanBanHanhId) {
+        List<DocumentDto> documentDtos = new ArrayList<>();
+        List<Document> documents = customDocumentRepository.getAllDocument(pageable,tuKhoa,coQuanBanHanhId).getContent();
+        for ( Document document: documents) {
+            DocumentDto documentDto = new DocumentDto();
+            documentDto.setId(document.getId().toString());
+            documentDto.setId(documentDto.getId());
+            documentDto.setNgayDen(document.getNgayDen());
+            documentDto.setNguoiKi(document.getNguoiKi());
+            documentDto.setDoKhan(document.getDoKhan());
+            documentDto.setSoDen(document.getSoDen());
+            documentDto.setSoHieu(document.getSoHieu());
+            documentDto.setTrichYeu(document.getTrichYeu());
+            documentDto.setNgayVanBan(document.getNgayVanBan());
+
+            SoVanBan svb = soVanBanRepository.findById(document.getSoVanBanId()).orElseThrow(
+                    () -> new UsernameNotFoundException("So van ban not found")
+            );
+            documentDto.setSoVanBan(svb.getName());
+            documentDto.setNhomSoVanBan(nhomSoVanBanRepository.getNameById(svb.getNhomSoVanBanId().toString()));
+            documentDto.setCoQuanBanHanh(coQuanBanHanhRepository.getNameById(document.getCoQuanBanHanhId().toString()));
+
+            List<String> listAttachId = documentAttachmentRepository.findListAttachIdByDocId(document.getId().toString());
+            List<Attachment> attachments = new ArrayList<>();
+            if (listAttachId.size() == 0) {
+                attachments = null;
+            } else {
+                attachments = attachRepository.findByListId(listAttachId);
+            }
+            documentDto.setAttachments(attachments);
+            documentDtos.add(documentDto);
+        }
+        return new PageImpl<>(documentDtos,pageable,documents.size());
     }
 
     @Override
     public DocumentDto getDocumentById(String id) {
-        Document document = documentRepository.getDocById(id);
+        Optional<Document> optional = documentRepository.findById(UUID.fromString(id));
+
+        Document document = new Document();
+        if (optional.isPresent()) {
+            document = optional.get();
+        } else {
+            throw new RuntimeException("Document not found by id:" + id);
+        }
         System.out.println("ID svb: " + document.getSoVanBanId().toString());
 
         DocumentDto documentDto = new DocumentDto();
@@ -72,8 +116,6 @@ public class DocumentServiceImpl implements DocumentService {
         SoVanBan svb = soVanBanRepository.findById(document.getSoVanBanId()).orElseThrow(
                 () -> new UsernameNotFoundException("Announcement not found with id : " + id)
         );
-//        System.out.println(svb.getNhomSoVanBanId()+"id svb");
-
         documentDto.setSoVanBan(svb.getName());
         documentDto.setNhomSoVanBan(nhomSoVanBanRepository.getNameById(svb.getNhomSoVanBanId().toString()));
         documentDto.setCoQuanBanHanh(coQuanBanHanhRepository.getNameById(document.getCoQuanBanHanhId().toString()));
@@ -114,12 +156,4 @@ public class DocumentServiceImpl implements DocumentService {
     public Document updateDocument(Document document) {
         return null;
     }
-
-//    @Override
-//    public List<Document> searchByTrichYeu(String search) {
-//
-//        return documentRepository.searchByTrichYeu(search);
-//    }
-
-
 }
