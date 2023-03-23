@@ -5,6 +5,7 @@ import com.example.demo.model.Document;
 import com.example.demo.request.CreateDocumentRequest;
 import com.example.demo.request.SearchDocumentRequest;
 import com.example.demo.service.DocumentService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,14 +26,15 @@ import java.util.UUID;
 @RequestMapping("/document")
 @Transactional
 public class DocumentController {
-
+    @Autowired
+    private ModelMapper modelMapper;
     @Autowired
     private DocumentService documentService;
 
     @GetMapping("/")
     public Page<DocumentDto> getAllDocument(Pageable pageable, @RequestBody SearchDocumentRequest request) {
 
-        return documentService.getAllDocument(pageable,request.getTuKhoa(),request.getCoQuanBanHanhId());
+        return documentService.getAllDocument(pageable, request.getTuKhoa(), request.getCoQuanBanHanhId());
     }
 
     @GetMapping("/{id}")
@@ -54,12 +56,13 @@ public class DocumentController {
         document.setDoKhan(request.getDoKhan());
 
         List<String> attachIds = request.getAttachIds();
-        return documentService.createNewDocument(document,attachIds);
+        return documentService.createNewDocument(document, attachIds);
     }
+
     @PutMapping("/{id}")
     public DocumentDto updateDocument(@RequestBody CreateDocumentRequest request,
-                                   @PathVariable("id") String id){
-        Document document = new Document();
+                                      @PathVariable("id") String id) {
+        Document document = modelMapper.map(request,Document.class);
         document.setId(UUID.fromString(id));
         document.setSoVanBanId(UUID.fromString(request.getSoVanBanId()));
         document.setSoDen(request.getSoDen());
@@ -72,7 +75,7 @@ public class DocumentController {
         document.setDoKhan(request.getDoKhan());
 
         List<String> attachIds = request.getAttachIds();
-        documentService.createNewDocument(document,attachIds);
+        documentService.createNewDocument(document, attachIds);
         return documentService.getDocumentById(id);
     }
 

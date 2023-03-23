@@ -20,35 +20,51 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public class CustomDocumentReopitoryImpl implements CustomDocumentRepository{
+public class CustomDocumentReopitoryImpl implements CustomDocumentRepository {
 
     @PersistenceContext
     private EntityManager em;
 
     @Override
     public Page<Document> getAllDocument(Pageable pageable,
-                                         String tuKhoa,String coQuanBanHanh) {
+                                         String tuKhoa, String coQuanBanHanh) {
         QDocument d = QDocument.document;
 
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(em);
 
-        BooleanBuilder builder = new BooleanBuilder();
+        //Method 2
+        JPAQuery<Document> query = jpaQueryFactory.selectFrom(d);
+        //keyword
         if (tuKhoa != null) {
-            builder.or(d.trichYeu.contains(tuKhoa))
-                    .or(d.soHieu.contains(tuKhoa))
-                    .or(d.soDen.contains(tuKhoa));
+            query.where(
+                    d.trichYeu.contains(tuKhoa)
+                            .or(d.soHieu.contains(tuKhoa))
+                            .or(d.soDen.contains(tuKhoa))
+            );
         }
+        //cq ban hanh
         if (coQuanBanHanh != null && !coQuanBanHanh.isEmpty()) {
-            builder.and(d.coQuanBanHanhId.eq(UUID.fromString(coQuanBanHanh)));
+            query.where(d.coQuanBanHanhId.eq(UUID.fromString(coQuanBanHanh)));
         }
 
-        JPAQuery<Document> query = jpaQueryFactory.selectFrom(d).where(builder);
+        //Method 1
+//        BooleanBuilder builder = new BooleanBuilder();
+//        if (tuKhoa != null) {
+//            builder.or(d.trichYeu.contains(tuKhoa))
+//                    .or(d.soHieu.contains(tuKhoa))
+//                    .or(d.soDen.contains(tuKhoa));
+//        }
+//        if (coQuanBanHanh != null && !coQuanBanHanh.isEmpty()) {
+//            builder.and(d.coQuanBanHanhId.eq(UUID.fromString(coQuanBanHanh)));
+//        }
+//
+//        JPAQuery<Document> query = jpaQueryFactory.selectFrom(d).where(builder);
 
-        QueryResults<Document> documentList =query.offset(pageable.getOffset())
+        QueryResults<Document> documentList = query.offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
 
-        Page<Document> documentPages = new PageImpl(documentList.getResults(),pageable,documentList.getTotal());
+        Page<Document> documentPages = new PageImpl(documentList.getResults(), pageable, documentList.getTotal());
         return documentPages;
     }
 }

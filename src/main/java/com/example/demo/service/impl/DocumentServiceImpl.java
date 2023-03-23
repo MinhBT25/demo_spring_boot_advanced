@@ -99,7 +99,7 @@ public class DocumentServiceImpl implements DocumentService {
         } else {
             throw new RuntimeException("Document not found by id:" + id);
         }
-        System.out.println("ID svb: " + document.getSoVanBanId().toString());
+//        System.out.println("ID svb: " + document.getSoVanBanId().toString());
 
         DocumentDto documentDto = new DocumentDto();
         documentDto.setId(document.getId().toString());
