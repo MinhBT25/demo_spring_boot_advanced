@@ -1,13 +1,20 @@
 package com.example.demo.dto;
 
 import com.example.demo.model.Attachment;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class DocumentDto {
     private String id;
     private String nhomSoVanBan;

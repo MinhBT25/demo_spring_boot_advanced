@@ -3,8 +3,8 @@ package com.example.demo.controller;
 import com.example.demo.dto.DocumentDto;
 import com.example.demo.model.Document;
 import com.example.demo.request.CreateDocumentRequest;
-import com.example.demo.request.SearchDocumentRequest;
 import com.example.demo.service.DocumentService;
+import com.example.demo.util.StringToUuidConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,9 +32,11 @@ public class DocumentController {
     private DocumentService documentService;
 
     @GetMapping("/")
-    public Page<DocumentDto> getAllDocument(Pageable pageable, @RequestBody SearchDocumentRequest request) {
+    public Page<DocumentDto> getAllDocument(Pageable pageable,
+                                            @RequestParam("tu_khoa")String tuKhoa,
+                                            @RequestParam("co_quan_ban_hanh_id")String cqbhId) {
 
-        return documentService.getAllDocument(pageable, request.getTuKhoa(), request.getCoQuanBanHanhId());
+        return documentService.getAllDocument(pageable, tuKhoa, cqbhId);
     }
 
     @GetMapping("/{id}")
@@ -44,17 +46,9 @@ public class DocumentController {
 
     @PostMapping("/")
     public DocumentDto createNewDocument(@RequestBody CreateDocumentRequest request) {
-        Document document = new Document();
-        document.setSoVanBanId(UUID.fromString(request.getSoVanBanId()));
-        document.setSoDen(request.getSoDen());
-        document.setSoHieu(request.getSoHieu());
-        document.setNgayDen(request.getNgayDen());
-        document.setNgayVanBan(request.getNgayVanBan());
-        document.setNguoiKi(request.getNguoiKi());
-        document.setTrichYeu(request.getTrichYeu());
-        document.setCoQuanBanHanhId(UUID.fromString(request.getCoQuanBanHanhId()));
-        document.setDoKhan(request.getDoKhan());
 
+        modelMapper.addConverter(new StringToUuidConverter());
+        Document document = modelMapper.map(request,Document.class);
         List<String> attachIds = request.getAttachIds();
         return documentService.createNewDocument(document, attachIds);
     }
@@ -62,21 +56,23 @@ public class DocumentController {
     @PutMapping("/{id}")
     public DocumentDto updateDocument(@RequestBody CreateDocumentRequest request,
                                       @PathVariable("id") String id) {
+
+        modelMapper.addConverter(new StringToUuidConverter());
         Document document = modelMapper.map(request,Document.class);
         document.setId(UUID.fromString(id));
-        document.setSoVanBanId(UUID.fromString(request.getSoVanBanId()));
-        document.setSoDen(request.getSoDen());
-        document.setSoHieu(request.getSoHieu());
-        document.setNgayDen(request.getNgayDen());
-        document.setNgayVanBan(request.getNgayVanBan());
-        document.setNguoiKi(request.getNguoiKi());
-        document.setTrichYeu(request.getTrichYeu());
-        document.setCoQuanBanHanhId(UUID.fromString(request.getCoQuanBanHanhId()));
-        document.setDoKhan(request.getDoKhan());
 
         List<String> attachIds = request.getAttachIds();
         documentService.createNewDocument(document, attachIds);
         return documentService.getDocumentById(id);
     }
+
+//    private Document mapRequestAndDocument(@RequestBody CreateDocumentRequest request) {
+//        modelMapper.createTypeMap(CreateDocumentRequest.class,Document.class)
+//                .addMappings(mapper -> mapper.map(src -> UUID.fromString(src.getSoVanBanId()), Document::setSoVanBanId))
+//                .addMappings(mapper -> mapper.map(src -> UUID.fromString(src.getCoQuanBanHanhId()), Document::setCoQuanBanHanhId));
+//
+//        Document document = modelMapper.map(request,Document.class);
+//        return document;
+//    }
 
 }

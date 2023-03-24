@@ -6,6 +6,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
+@Data
 public class CreateDocumentRequest {
     public String soVanBanId;
     public String soHieu;

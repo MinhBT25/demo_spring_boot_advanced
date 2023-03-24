@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class DocumentServiceImpl implements DocumentService {
@@ -54,28 +56,62 @@ public class DocumentServiceImpl implements DocumentService {
     private CustomDocumentRepository customDocumentRepository;
 
     @Override
-    public Page<DocumentDto> getAllDocument(Pageable pageable,String tuKhoa,String coQuanBanHanhId) {
-        List<DocumentDto> documentDtos = new ArrayList<>();
-        List<Document> documents = customDocumentRepository.getAllDocument(pageable,tuKhoa,coQuanBanHanhId).getContent();
-        for ( Document document: documents) {
-            DocumentDto documentDto = new DocumentDto();
-            documentDto.setId(document.getId().toString());
-            documentDto.setId(documentDto.getId());
-            documentDto.setNgayDen(document.getNgayDen());
-            documentDto.setNguoiKi(document.getNguoiKi());
-            documentDto.setDoKhan(document.getDoKhan());
-            documentDto.setSoDen(document.getSoDen());
-            documentDto.setSoHieu(document.getSoHieu());
-            documentDto.setTrichYeu(document.getTrichYeu());
-            documentDto.setNgayVanBan(document.getNgayVanBan());
+    public Page<DocumentDto> getAllDocument(Pageable pageable, String tuKhoa, String coQuanBanHanhId) {
+
+        List<Document> documents = customDocumentRepository.getAllDocument(pageable, tuKhoa, coQuanBanHanhId).getContent();
+
+        List<DocumentDto> documentDtos = documents.stream().map(document -> {
+
+                    String id = document.getId().toString();
+                    String soHieu =document.getSoHieu();
+                    String soDen =document.getSoDen();
+                    String trichYeu = document.getTrichYeu();
+                    String ngayDen = document.getNgayDen();
+                    String ngayVanBan = document.getNgayVanBan();
+                    String nguoiKi = document.getNguoiKi();
+                    String doKhan = document.getDoKhan();
+
+                    SoVanBan svb = soVanBanRepository.findById(document.getSoVanBanId()).orElseThrow(
+                            () -> new UsernameNotFoundException("So van ban not found")
+                    );
+                    String soVanBan = svb.getName();
+                    String nhomSoVanBan = nhomSoVanBanRepository.getNameById(svb.getNhomSoVanBanId().toString());
+                    String coQuanBanHanh = coQuanBanHanhRepository.getNameById(document.getCoQuanBanHanhId().toString());
+                    List<String> listAttachId = documentAttachmentRepository.findListAttachIdByDocId(document.getId().toString());
+                    List<Attachment> attachments = new ArrayList<>();
+                    if (listAttachId.size() == 0) {
+                        attachments = null;
+                    } else {
+                        attachments = attachRepository.findByListId(listAttachId);
+                    }
+
+                    return new DocumentDto(id,nhomSoVanBan,soVanBan,soHieu,soDen,trichYeu,ngayDen,ngayVanBan,nguoiKi,doKhan,coQuanBanHanh,attachments);
+                })
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(documentDtos, pageable, documents.size());
+    }
+
+    @Override
+    public DocumentDto getDocumentById(String id) {
+        Optional<Document> optional = documentRepository.findById(UUID.fromString(id));
+        Document document = optional.get();
+
+        DocumentDto documentDto = Stream.of(document).map(p -> {
+            String soHieu =document.getSoHieu();
+            String soDen =document.getSoDen();
+            String trichYeu = document.getTrichYeu();
+            String ngayDen = document.getNgayDen();
+            String ngayVanBan = document.getNgayVanBan();
+            String nguoiKi = document.getNguoiKi();
+            String doKhan = document.getDoKhan();
 
             SoVanBan svb = soVanBanRepository.findById(document.getSoVanBanId()).orElseThrow(
                     () -> new UsernameNotFoundException("So van ban not found")
             );
-            documentDto.setSoVanBan(svb.getName());
-            documentDto.setNhomSoVanBan(nhomSoVanBanRepository.getNameById(svb.getNhomSoVanBanId().toString()));
-            documentDto.setCoQuanBanHanh(coQuanBanHanhRepository.getNameById(document.getCoQuanBanHanhId().toString()));
-
+            String soVanBan = svb.getName();
+            String nhomSoVanBan = nhomSoVanBanRepository.getNameById(svb.getNhomSoVanBanId().toString());
+            String coQuanBanHanh = coQuanBanHanhRepository.getNameById(document.getCoQuanBanHanhId().toString());
             List<String> listAttachId = documentAttachmentRepository.findListAttachIdByDocId(document.getId().toString());
             List<Attachment> attachments = new ArrayList<>();
             if (listAttachId.size() == 0) {
@@ -83,51 +119,10 @@ public class DocumentServiceImpl implements DocumentService {
             } else {
                 attachments = attachRepository.findByListId(listAttachId);
             }
-            documentDto.setAttachments(attachments);
-            documentDtos.add(documentDto);
-        }
-        return new PageImpl<>(documentDtos,pageable,documents.size());
-    }
 
-    @Override
-    public DocumentDto getDocumentById(String id) {
-        Optional<Document> optional = documentRepository.findById(UUID.fromString(id));
+            return new DocumentDto(id,nhomSoVanBan,soVanBan,soHieu,soDen,trichYeu,ngayDen,ngayVanBan,nguoiKi,doKhan,coQuanBanHanh,attachments);
+        }).findFirst().orElse(null);
 
-        Document document = new Document();
-        if (optional.isPresent()) {
-            document = optional.get();
-        } else {
-            throw new RuntimeException("Document not found by id:" + id);
-        }
-//        System.out.println("ID svb: " + document.getSoVanBanId().toString());
-
-        DocumentDto documentDto = new DocumentDto();
-        documentDto.setId(document.getId().toString());
-        documentDto.setId(documentDto.getId());
-        documentDto.setNgayDen(document.getNgayDen());
-        documentDto.setNguoiKi(document.getNguoiKi());
-        documentDto.setDoKhan(document.getDoKhan());
-        documentDto.setSoDen(document.getSoDen());
-        documentDto.setSoHieu(document.getSoHieu());
-        documentDto.setTrichYeu(document.getTrichYeu());
-        documentDto.setNgayVanBan(document.getNgayVanBan());
-//        documentDto.setSoVanBan(soVanBanRepository.getNameById(document.getSoVanBanId().toString()));
-
-        SoVanBan svb = soVanBanRepository.findById(document.getSoVanBanId()).orElseThrow(
-                () -> new UsernameNotFoundException("Announcement not found with id : " + id)
-        );
-        documentDto.setSoVanBan(svb.getName());
-        documentDto.setNhomSoVanBan(nhomSoVanBanRepository.getNameById(svb.getNhomSoVanBanId().toString()));
-        documentDto.setCoQuanBanHanh(coQuanBanHanhRepository.getNameById(document.getCoQuanBanHanhId().toString()));
-
-        List<String> listAttachId = documentAttachmentRepository.findListAttachIdByDocId(id);
-        List<Attachment> attachments = new ArrayList<>();
-        if (listAttachId.size() == 0) {
-            attachments = null;
-        } else {
-            attachments = attachRepository.findByListId(listAttachId);
-        }
-        documentDto.setAttachments(attachments);
 
         return documentDto;
     }
@@ -151,9 +146,4 @@ public class DocumentServiceImpl implements DocumentService {
         return getDocumentById(document.getId().toString());
     }
 
-
-    @Override
-    public Document updateDocument(Document document) {
-        return null;
-    }
 }

@@ -14,6 +14,4 @@ public interface DocumentService{
 
     DocumentDto createNewDocument(Document document, List<String> attachIds);
 
-    Document updateDocument(Document document);
-
 }
